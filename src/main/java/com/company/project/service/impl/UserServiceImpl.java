@@ -11,7 +11,9 @@ import javax.annotation.Resource;
 
 
 /**
- * Created by CodeGenerator on 2017/08/02.
+ * Created by CodeGenerator on 2017/10/15.
+ *
+ * User的service层具体实现
  */
 @Service
 @Transactional

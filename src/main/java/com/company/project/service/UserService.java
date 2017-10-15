@@ -4,7 +4,9 @@ import com.company.project.core.Service;
 
 
 /**
- * Created by CodeGenerator on 2017/08/02.
+ * Created by CodeGenerator on 2017/10/15.
+ *
+ * User的service层接口
  */
 public interface UserService extends Service<User> {
 

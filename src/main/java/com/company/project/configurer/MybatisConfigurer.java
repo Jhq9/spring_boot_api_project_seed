@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
+import org.springframework.web.bind.annotation.PathVariable;
 import tk.mybatis.spring.mapper.MapperScannerConfigurer;
 
 import javax.annotation.Resource;

@@ -19,9 +19,7 @@ import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.NoHandlerFoundException;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.springframework.web.servlet.config.annotation.*;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import javax.servlet.ServletException;
@@ -34,7 +32,10 @@ import java.util.Collections;
 import java.util.List;
 
 /**
+ * @author jinhuaquan
+ *
  * Spring MVC 配置
+ *
  */
 @Configuration
 public class WebMvcConfigurer extends WebMvcConfigurerAdapter {
@@ -48,9 +49,9 @@ public class WebMvcConfigurer extends WebMvcConfigurerAdapter {
     public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
         FastJsonHttpMessageConverter4 converter = new FastJsonHttpMessageConverter4();
         FastJsonConfig config = new FastJsonConfig();
-        config.setSerializerFeatures(SerializerFeature.WriteMapNullValue,//保留空的字段
-                SerializerFeature.WriteNullStringAsEmpty,//String null -> ""
-                SerializerFeature.WriteNullNumberAsZero);//Number null -> 0
+        config.setSerializerFeatures(SerializerFeature.WriteMapNullValue, //保留空的字段
+                SerializerFeature.WriteNullStringAsEmpty,  //String null -> ""
+                SerializerFeature.WriteNullNumberAsZero);  //Number null -> 0
         converter.setFastJsonConfig(config);
         converter.setDefaultCharset(Charset.forName("UTF-8"));
         converters.add(converter);
@@ -61,6 +62,7 @@ public class WebMvcConfigurer extends WebMvcConfigurerAdapter {
     @Override
     public void configureHandlerExceptionResolvers(List<HandlerExceptionResolver> exceptionResolvers) {
         exceptionResolvers.add(new HandlerExceptionResolver() {
+            @Override
             public ModelAndView resolveException(HttpServletRequest request, HttpServletResponse response, Object handler, Exception e) {
                 Result result = new Result();
                 if (e instanceof ServiceException) {//业务失败的异常，如“账号或密码错误”
@@ -122,6 +124,27 @@ public class WebMvcConfigurer extends WebMvcConfigurerAdapter {
                 }
             });
         }
+    }
+
+    /**
+     * 发现如果继承了WebMvcConfigurationSupport，则在yml中配置的相关内容会失效。
+     * 需要重新指定静态资源
+     *
+     * @param registry
+     */
+     @Override
+     public void addResourceHandlers(ResourceHandlerRegistry registry) {
+         registry.addResourceHandler("/**").addResourceLocations("classpath:/static/");
+         registry.addResourceHandler("swagger-ui.html").addResourceLocations("classpath:/META-INF/resources/");
+         registry.addResourceHandler("/webjars/**").addResourceLocations("classpath:/META-INF/resources/webjars/");
+         super.addResourceHandlers(registry);
+     }
+
+     /**
+     * 配置servlet处理
+     */
+    @Override
+    public void configureDefaultServletHandling(DefaultServletHandlerConfigurer configurer) { configurer.enable();
     }
 
     private void responseResult(HttpServletResponse response, Result result) {

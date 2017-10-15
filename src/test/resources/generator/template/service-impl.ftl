@@ -12,6 +12,8 @@ import javax.annotation.Resource;
 
 /**
  * Created by ${author} on ${date}.
+ *
+ * ${modelNameUpperCamel}的service层具体实现
  */
 @Service
 @Transactional

@@ -37,7 +37,7 @@ public class CodeGenerator {
     private static final String DATE = new SimpleDateFormat("yyyy/MM/dd").format(new Date());//@date
 
     public static void main(String[] args) {
-        genCode("role");
+        genCode("user");
         //genCode("输入表名","输入自定义Model名称");
     }
 
@@ -214,7 +214,7 @@ public class CodeGenerator {
 
     private static String modelNameConvertMappingPath(String modelName) {
         String tableName = CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, modelName);
-        return tableNameConvertMappingPath(tableName);
+        return tableNameConvertMappingPath(tableName) + "s";
     }
 
     private static String packageConvertPath(String packageName) {
