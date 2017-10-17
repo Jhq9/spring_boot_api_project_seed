@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.company.project.dao.RoleMapper">
+  <resultMap id="BaseResultMap" type="com.company.project.model.Role">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="name" jdbcType="CHAR" property="name" />
+  </resultMap>
+
+  <insert id="saveRole" parameterType="com.company.project.model.Role" keyProperty="id" useGeneratedKeys="true">
+    <selectKey keyProperty="id" resultType="java.lang.Long">
+      select LAST_INSERT_ID()
+    </selectKey>
+    INSERT INTO ROLE(name) VALUES(#{name})
+  </insert>
+
+  <select id="findById" parameterType="java.lang.Long" resultType="com.company.project.model.Role">
+    SELECT id,name FROM ROLE WHERE id=#{id}
+  </select>
+
+  <select id="findByName" parameterType="java.lang.String"  resultType="com.company.project.model.Role" >
+    SELECT id,name FROM ROLE WHERE name=#{value}
+  </select>
+
+  <select id="findAll" resultType="com.company.project.model.Role" >
+    SELECT id,name FROM ROLE
+  </select>
+  
+  <update id="updateRole" parameterType="com.company.project.model.Role">
+    UPDATE role SET name=#{name} WHERE id=#{id}
+  </update>
+  
+  <delete id="deleteById" parameterType="java.lang.Long">
+    DELETE FROM role WHERE id=#{id}
+  </delete>
+
+</mapper>
