@@ -50,8 +50,7 @@ public class RoleServiceTester extends Tester {
     @Test
     public void testFindAll() {
         List<Role> role = roleService.findAll();
-
-        Assert.isTrue(role.size()==3, "角色查询不正确");
+        Assert.isTrue(role.size() > 0, "角色查询不正确");
     }
 
     /**

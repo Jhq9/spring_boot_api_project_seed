@@ -80,14 +80,14 @@ public class UserControllerTester extends ControllerTester{
      */
     @Test
     public void testGetUser() throws Exception {
-        mockMvc.perform(get("/api/users/5")
+        mockMvc.perform(get("/api/users/13")
                             .contentType(MediaType.APPLICATION_JSON_UTF8))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
             .andExpect(jsonPath("$.code", is(200)))
             .andExpect(jsonPath("$.message", is("SUCCESS")))
             .andExpect(jsonPath("$.data", notNullValue()))
-            .andExpect(jsonPath("$.data.id", is(5)));
+            .andExpect(jsonPath("$.data.id", is(13)));
     }
 
 
