@@ -11,3 +11,14 @@ spring:
       charset: UTF-8
       enabled: true
       force: true
+#TOKEN工具
+jwt:
+  header: Authorization
+  secret: mysecret
+  expiration: 604800
+  tokenHead: "cat "
+  route:
+    authentication:
+      path: auth
+      refresh: refresh
+      register: "/api/users/actions/register"

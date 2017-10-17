@@ -2,16 +2,34 @@ package com.company.project.web;
 
 import com.company.project.core.Result;
 import com.company.project.core.ResultGenerator;
+import com.company.project.dto.UserRegisterDTO;
 import com.company.project.model.User;
+import com.company.project.security.GeneratorUserDetailService;
+import com.company.project.security.JwtTokenUtil;
+import com.company.project.security.SecurityUser;
+import com.company.project.service.RoleService;
 import com.company.project.service.UserService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.util.StringUtils;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.Resource;
+import javax.validation.Valid;
 import java.util.List;
 
 /**
@@ -22,17 +40,50 @@ import java.util.List;
 @RestController
 @RequestMapping("/api")
 public class UserController {
-    @Resource
+
+    public static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
+
+    @Autowired
     private UserService userService;
 
+    @Autowired
+    private AuthenticationManager authenticationManager;
 
-    @ApiOperation(value="保存User", notes="新增一个User")
-    @ApiImplicitParam(name = "User", value = "实体User", required = true, dataType = "User")
-    @RequestMapping(value = "/users", method = RequestMethod.POST)
-    public Result saveUser (@RequestBody User user) {
-        userService.save(user);
-        return ResultGenerator.genSuccessResult();
+    @Autowired
+    private RoleService roleService;
+
+    @Autowired
+    private JwtTokenUtil jwtTokenUtil;
+
+    @Autowired
+    private GeneratorUserDetailService userDetailService;
+
+
+    @Value("${jwt.tokenHead}")
+    private String tokenHead;
+
+    /**
+     * 用户的注册
+     * @param userRegisterDto
+     * @return
+     */
+    @ApiOperation(value="注册新User", notes="注册一个User")
+    @ApiImplicitParam(name = "UserRegisterDTO", value = "DTO", required = true, dataType = "UserRegisterDTO")
+    @RequestMapping(value = "/users/actions/register", method = RequestMethod.POST)
+    public Result saveUser(@RequestBody @Valid UserRegisterDTO userRegisterDto, BindingResult bindingResult){
+
+        if (bindingResult.hasErrors()){
+            return ResultGenerator.genFailResult(bindingResult.getFieldError().getDefaultMessage());
+        }
+
+        Long userId = userService.saveUser(userRegisterDto);
+
+        return ResultGenerator.genSuccessResult(userId);
     }
+
+
+
+
 
     @ApiOperation(value="根据id删除user", notes="根据url中的id来指定删除user对象")
     @ApiImplicitParam(name = "id", value = "user的id", required = true, dataType = "Long")
@@ -49,7 +100,7 @@ public class UserController {
         })
     @RequestMapping(value = "/users/{id}", method = RequestMethod.PUT)
     public Result updateUser(@PathVariable Long id, @RequestBody User user) {
-        userService.update(user);
+        userService.updateUser(user);
         return ResultGenerator.genSuccessResult();
     }
 
@@ -68,5 +119,68 @@ public class UserController {
         List<User> list = userService.findAll();
         PageInfo pageInfo = new PageInfo(list);
         return ResultGenerator.genSuccessResult(pageInfo);
+    }
+
+
+    /**
+     * 用户登录
+     * @param email
+     * @param password
+     * @return
+     */
+    @RequestMapping(value = "/users/actions/login", method = RequestMethod.GET)
+    public Result login(@RequestHeader String userName, @RequestHeader String password)
+    {
+        if (!StringUtils.hasText(userName)){
+            return ResultGenerator.genFailResult("用户名不能为空");
+        }
+        if (!StringUtils.hasText(password)){
+            return ResultGenerator.genFailResult("密码不能为空哦");
+        }
+        //根据用户输入的账号及密码生成AuthenticationToken
+        UsernamePasswordAuthenticationToken upToken = new UsernamePasswordAuthenticationToken(userName, password);
+
+        try {
+            // 用户名密码登陆效验
+            final Authentication authentication = authenticationManager.authenticate(upToken);
+            // 认证成功，将认证信息存入holder中
+            SecurityContext ctx = SecurityContextHolder.createEmptyContext();
+            SecurityContextHolder.setContext(ctx);
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+
+            final UserDetails userDetails = userDetailService.loadUserByUsername(userName);
+            //jwt工具生成的TOKEN
+            final String token = jwtTokenUtil.generateToken(userDetails);
+
+            return ResultGenerator.genSuccessResult(token);
+        }catch (AuthenticationException e){
+            e.printStackTrace();
+            return ResultGenerator.genFailResult("账号不存在或密码错误哦");
+        }
+    }
+
+    /**
+     * 刷新TOKEN
+     * @param oldToken
+     * @return
+     */
+    @GetMapping("/actions/refresh")
+    public Result refresh(@RequestHeader("Authorization") String oldToken){
+        final String token = oldToken.substring(tokenHead.length(),oldToken.length());
+        LOGGER.info("token is "+token);
+        String username = jwtTokenUtil.getUsernameFromToken(token);
+        LOGGER.info("username is "+username);
+
+        try {
+            SecurityUser user = (SecurityUser) userDetailService.loadUserByUsername(username);
+
+            if (jwtTokenUtil.canTokenBeRefreshed(token, user.getLastPasswordResetDate())){
+                return ResultGenerator.genSuccessResult(jwtTokenUtil.refreshToken(token));
+            }else {
+                return ResultGenerator.genFailResult("Token刷新失败了 =。=");
+            }
+        }catch (AuthenticationException e) {
+            return ResultGenerator.genFailResult("认证失败了 =。=");
+        }
     }
 }

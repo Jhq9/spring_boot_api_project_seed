@@ -2,15 +2,65 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.company.project.dao.UserMapper">
   <resultMap id="BaseResultMap" type="com.company.project.model.User">
-    <!--
-      WARNING - @mbg.generated
-    -->
     <id column="id" jdbcType="BIGINT" property="id" />
     <result column="name" jdbcType="VARCHAR" property="name" />
     <result column="email" jdbcType="VARCHAR" property="email" />
-    <result column="role" jdbcType="BIGINT" property="role" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="password" jdbcType="VARCHAR" property="password" />
     <result column="last_password_reset_date" jdbcType="TIMESTAMP" property="lastPasswordResetDate" />
+    <result column="phone" jdbcType="VARCHAR" property="phone"/>
+
+    <association javaType="com.company.project.model.Role" property="role">
+      <id property="id" column="r_id" />
+      <result property="name" column="r_name"/>
+    </association>
   </resultMap>
+
+  <insert id="saveUser" parameterType="com.company.project.model.User" keyProperty="id" useGeneratedKeys="true">
+    <selectKey keyProperty="id" resultType="java.lang.Long">
+      select LAST_INSERT_ID()
+    </selectKey>
+    INSERT INTO USER(name,email,password,role,create_time,last_password_reset_date,phone)
+    VALUES(#{name},#{email},#{password},#{role.id},#{createTime},#{lastPasswordResetDate},#{phone})
+  </insert>
+
+  <select id="findByPhone" parameterType="java.lang.String" resultMap="BaseResultMap">
+    SELECT u.id,u.name,r.id AS r_id,r.name AS r_name,u.create_time,u.email,u.password,
+    u.last_password_reset_date,u.phone FROM USER u LEFT JOIN ROLE r ON u.role=r.id WHERE u.phone=#{phone}
+  </select>
+
+  <select id="findByEmail" parameterType="java.lang.String" resultMap="BaseResultMap">
+    SELECT u.id,u.name,r.id AS r_id,r.name AS r_name,u.create_time,u.email,u.password,
+    u.last_password_reset_date,u.phone FROM USER u LEFT JOIN ROLE r ON u.role=r.id WHERE u.email=#{email}
+  </select>
+
+  <select id="findById" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    SELECT u.id,u.name,r.id AS r_id,r.name AS r_name,u.create_time,u.email,u.password,
+    u.last_password_reset_date,phone FROM USER u LEFT JOIN ROLE r ON u.role=r.id WHERE u.id=#{id}
+  </select>
+
+  <select id="findAll" resultMap="BaseResultMap">
+    SELECT u.id,u.name,r.id AS r_id,r.name AS r_name,u.create_time,u.email,u.password,
+    u.last_password_reset_date,u.phone FROM USER u LEFT JOIN ROLE r ON u.role=r.id
+  </select>
+  
+  <delete id="deleteById" parameterType="java.lang.Long">
+    DELETE FROM user WHERE id=#{id}
+  </delete>
+  
+  <update id="updatePassword">
+    UPDATE user SET password=#{password} WHERE id=#{id}
+  </update>
+
+  <update id="updatePhone">
+    UPDATE user SET phone=#{phone} WHERE id=#{id}
+  </update>
+
+  <update id="updateRole">
+    UPDATE user SET role=#{role} WHERE id=#{id}
+  </update>
+
+  <update id="updateUser" parameterType="com.company.project.model.User">
+    UPDATE user SET email=#{email},name=#{name} WHERE id=#{id}
+  </update>
 </mapper>

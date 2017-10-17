@@ -1,7 +1,7 @@
 spring:
   datasource:
     druid:
-      url: jdbc:mysql://localhost:3306/blog
+      url: jdbc:mysql://localhost:3306/jwt
       username: root
       password: Jovaunn1
       # 下面为连接池的补充设置，应用到上面所有数据源中
@@ -28,6 +28,14 @@ spring:
       connection-properties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
       #合并多个DruidDataSource的监控数据
       use-global-data-source-stat: true
+      driver-class-name: com.mysql.jdbc.Driver
       #druid datasouce database settings end
-
+logging:
+  level: info
+security:
+  basic:
+    enabled: false
+management:
+  security:
+    enabled: false
 
