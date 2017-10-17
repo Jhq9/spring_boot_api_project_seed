@@ -5,13 +5,14 @@ import com.company.project.security.JwtAuthenticationEntryPoint;
 import com.company.project.security.JwtAuthenticationTokenFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -26,27 +27,51 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
  * Created by jinhuaquan on 2017/7/11.
  */
 @Configuration
-@EnableWebSecurity
 //开启security方法上的权限控制的注解
+@Order(SecurityProperties.ACCESS_OVERRIDE_ORDER)
 @EnableGlobalMethodSecurity(securedEnabled = true, jsr250Enabled = true)
 public class SecurityConfigurer extends WebSecurityConfigurerAdapter{
 
     @Autowired
     private JwtAuthenticationEntryPoint unauthorizedHandler;
 
-    @Autowired
-    private GeneratorUserDetailService generatorUserDetailService;
-
-
     public static final String ENVIRONMENT_DEV = "dev";
     @Value("${spring.profiles.active}")
     private String env;//当前激活的配置文件
+
+    /**
+     * 装载BCrypt密码编码器
+     * @return
+     */
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+
+        return new BCryptPasswordEncoder();
+
+    }
+
+    /**
+     * 自定义UserDetailsService，从数据库中读取用户信息
+     * @return
+     */
+    public GeneratorUserDetailService generatorUserDetailService(){
+        return new GeneratorUserDetailService();
+    }
 
 
     @Bean
     @Override
     protected AuthenticationManager authenticationManager() throws Exception {
         return super.authenticationManager();
+    }
+
+    @Autowired
+    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
+
+        auth
+            .userDetailsService(generatorUserDetailService())
+            .passwordEncoder(passwordEncoder());
+
     }
 
 
@@ -98,35 +123,6 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter{
         return source;
     }
 
-
-    @Autowired
-    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-
-        auth
-            .userDetailsService(generatorUserDetailService)
-            .passwordEncoder(passwordEncoder());
-
-    }
-
-    /**
-     * 装载BCrypt密码编码器
-     * @return
-     */
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-
-        return new BCryptPasswordEncoder();
-
-    }
-
-    ///**
-    // * 自定义UserDetailsService，从数据库中读取用户信息
-    // * @return
-    // */
-    //@Bean
-    //public GeneratorUserDetailService generatorUserDetailService(){
-    //    return new GeneratorUserDetailService();
-    //}
 
     /**
      * TOKEN校验的过滤器

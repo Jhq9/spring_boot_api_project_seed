@@ -18,9 +18,6 @@ public class UserServiceTester extends Tester{
     @Autowired
     private UserService userService;
 
-    @Autowired
-    private RoleService roleService;
-
     /**
      * 保存一个新用户
      */
