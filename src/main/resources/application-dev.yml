@@ -31,7 +31,13 @@ spring:
       driver-class-name: com.mysql.jdbc.Driver
       #druid datasouce database settings end
 logging:
-  level: info
+  level:
+    root: info
+    org:
+      springframework:
+        web: debug
+      hibernate: error
+  file: log_dev.log
 security:
   basic:
     enabled: false

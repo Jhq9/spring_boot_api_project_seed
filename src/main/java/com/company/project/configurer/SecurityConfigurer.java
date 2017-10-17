@@ -28,11 +28,14 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @Configuration
 @EnableWebSecurity
 //开启security方法上的权限控制的注解
-@EnableGlobalMethodSecurity(securedEnabled = true)
+@EnableGlobalMethodSecurity(securedEnabled = true, jsr250Enabled = true)
 public class SecurityConfigurer extends WebSecurityConfigurerAdapter{
 
     @Autowired
     private JwtAuthenticationEntryPoint unauthorizedHandler;
+
+    @Autowired
+    private GeneratorUserDetailService generatorUserDetailService;
 
 
     public static final String ENVIRONMENT_DEV = "dev";
@@ -59,11 +62,17 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter{
                 // 基于token，所以不需要session
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
             //允许所有用户访问"/"
-            http.cors().and().exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and().authorizeRequests().antMatchers("/", "/static/", "/api/users/actions/register", "/swagger-ui.html", "/swagger-resources", "/webjars/**", "/v2/api-docs").permitAll().antMatchers("/auth/**")
+            http.cors().and()
+                .exceptionHandling()
+                .authenticationEntryPoint(unauthorizedHandler).and()
+                .authorizeRequests().antMatchers("/", "/static/", "/api/users/actions/register")
+                .permitAll()
+                .antMatchers("/auth/**")
                 // 对于获取token的rest api要允许匿名访问
                 .permitAll()
                 //其他地址的访问均需验证权限
-                .anyRequest().authenticated().and().formLogin()
+                .anyRequest().authenticated()
+                .and().formLogin()
                 //指定登录页是"/login"
                 .loginPage("/api/users/actions/login").permitAll()
                 //登录成功后默认跳转到"/hello"
@@ -94,8 +103,8 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter{
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
 
         auth
-                .userDetailsService(generatorUserDetailService())
-                .passwordEncoder(passwordEncoder());
+            .userDetailsService(generatorUserDetailService)
+            .passwordEncoder(passwordEncoder());
 
     }
 
@@ -110,14 +119,14 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter{
 
     }
 
-    /**
-     * 自定义UserDetailsService，从数据库中读取用户信息
-     * @return
-     */
-    @Bean
-    public GeneratorUserDetailService generatorUserDetailService(){
-        return new GeneratorUserDetailService();
-    }
+    ///**
+    // * 自定义UserDetailsService，从数据库中读取用户信息
+    // * @return
+    // */
+    //@Bean
+    //public GeneratorUserDetailService generatorUserDetailService(){
+    //    return new GeneratorUserDetailService();
+    //}
 
     /**
      * TOKEN校验的过滤器
