@@ -40,7 +40,7 @@ public class SwaggerConfigurer {
         return new ApiInfoBuilder()
                    .title("Spring Boot中使用Swagger2来构建Restful APIs")
                    .description("may i 的Spring Boot配合Swagger2及Easy Mock的测试")
-                   .termsOfServiceUrl("http://isa.qa/")
+                   .termsOfServiceUrl("http://jinhuaquan.xin/")
                    .version("1.0")
                    .build();
     }

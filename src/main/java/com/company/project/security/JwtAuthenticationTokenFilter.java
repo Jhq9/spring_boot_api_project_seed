@@ -19,7 +19,8 @@ import java.io.IOException;
 
 /**
  * 对需要进行权限或角色认证的每个请求进行解析与校验
- * Created by jinhuaquan on 2017/7/31.
+ * @author jinhuaquan
+ * @date 2017/7/31
  */
 @Component
 public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {

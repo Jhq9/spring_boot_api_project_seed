@@ -1,8 +1,10 @@
 package com.company.project.configurer;
 
+import com.company.project.dao.UserMapper;
 import com.company.project.security.GeneratorUserDetailService;
 import com.company.project.security.JwtAuthenticationEntryPoint;
 import com.company.project.security.JwtAuthenticationTokenFilter;
+import com.google.common.collect.ImmutableList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
@@ -27,7 +29,9 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
  * Created by jinhuaquan on 2017/7/11.
  */
 @Configuration
-//开启security方法上的权限控制的注解
+/**
+ * 开启security方法上的权限控制的注解
+ */
 @Order(SecurityProperties.ACCESS_OVERRIDE_ORDER)
 @EnableGlobalMethodSecurity(securedEnabled = true, jsr250Enabled = true)
 public class SecurityConfigurer extends WebSecurityConfigurerAdapter{
@@ -35,9 +39,16 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter{
     @Autowired
     private JwtAuthenticationEntryPoint unauthorizedHandler;
 
+    @Autowired
+    private UserMapper userMapper;
+
     public static final String ENVIRONMENT_DEV = "dev";
+
+    /**
+     * 当前激活的配置文件
+     */
     @Value("${spring.profiles.active}")
-    private String env;//当前激活的配置文件
+    private String env;
 
     /**
      * 装载BCrypt密码编码器
@@ -45,17 +56,16 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter{
      */
     @Bean
     public PasswordEncoder passwordEncoder() {
-
         return new BCryptPasswordEncoder();
-
     }
 
     /**
      * 自定义UserDetailsService，从数据库中读取用户信息
      * @return
      */
+    @Bean
     public GeneratorUserDetailService generatorUserDetailService(){
-        return new GeneratorUserDetailService();
+        return new GeneratorUserDetailService(userMapper);
     }
 
 
@@ -117,9 +127,19 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter{
      * @return
      */
     @Bean
-    CorsConfigurationSource corsConfigurationSource() {
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", new CorsConfiguration().applyPermitDefaultValues());
+    public CorsConfigurationSource corsConfigurationSource() {
+        final CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(ImmutableList.of("*"));
+        configuration.setAllowedMethods(ImmutableList.of("HEAD",
+            "GET", "POST", "PUT", "DELETE", "PATCH"));
+        // setAllowCredentials(true) is important, otherwise:
+        // The value of the 'Access-Control-Allow-Origin' header in the response must not be the wildcard '*' when the request's credentials mode is 'include'.
+        configuration.setAllowCredentials(true);
+        // setAllowedHeaders is important! Without it, OPTIONS preflight request
+        // will fail with 403 Invalid CORS request
+        configuration.setAllowedHeaders(ImmutableList.of("Authorization", "Cache-Control", "Content-Type"));
+        final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
         return source;
     }
 

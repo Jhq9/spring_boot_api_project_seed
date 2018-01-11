@@ -6,7 +6,9 @@ import com.company.project.model.User;
 import java.util.List;
 
 /**
- * Created by CodeGenerator on 2017/10/15.
+ *
+ * @author CodeGenerator
+ * @date 2017/10/15
  *
  * User的service层接口
  */
@@ -14,7 +16,6 @@ public interface UserService {
 
     /**
      * 注册一个新用户
-     *
      * @param userRegisterDTO
      * @return
      */
@@ -22,14 +23,13 @@ public interface UserService {
 
     /**
      * 根据id删除用户
-     *
      * @param id
+     * @return
      */
-    void deleteById(Long id);
+    Integer deleteById(Long id);
 
     /**
      * 更新用户信息
-     *
      * @param user
      * @return
      */
@@ -37,7 +37,6 @@ public interface UserService {
 
     /**
      * 根据id查询特定用户
-     *
      * @param id
      * @return
      */
@@ -51,7 +50,6 @@ public interface UserService {
 
     /**
      * 根据手机号查询出用户
-     *
      * @param phone
      * @return
      */
@@ -59,7 +57,6 @@ public interface UserService {
 
     /**
      * 根据email查询出用户
-     *
      * @param email
      * @return
      */

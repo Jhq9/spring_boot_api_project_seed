@@ -10,9 +10,13 @@ import com.company.project.security.GeneratorUserDetailService;
 import com.company.project.security.JwtTokenUtil;
 import com.company.project.security.SecurityUser;
 import com.company.project.service.UserService;
+import com.google.common.base.Preconditions;
 import lombok.AllArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.ibatis.transaction.TransactionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -26,8 +30,11 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
 import java.util.Date;
 import java.util.List;
+
+import static com.google.common.base.Preconditions.checkArgument;
 
 
 /**
@@ -62,21 +69,19 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = TransactionException.class)
     public Long saveUser(UserRegisterDTO registerDTO) {
-
+        Date now = Date.from(Instant.now());
         Role role = roleMapper.findByName(registerDTO.getRoleName());
 
         User user = new User();
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-
-        user.setName(registerDTO.getName());
-        user.setPhone(registerDTO.getPhone());
-        user.setEmail(registerDTO.getEmail());
+        BeanUtils.copyProperties(registerDTO, user);
         user.setPassword(encoder.encode(registerDTO.getPassword()));
-        user.setCreateTime(new Date());
-        user.setLastPasswordResetDate(new Date());
         user.setRole(role);
+
+        user.setCreateTime(now);
+        user.setLastPasswordResetDate(now);
 
         userMapper.saveUser(user);
 
@@ -84,12 +89,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void deleteById(Long id) {
-        userMapper.deleteById(id);
+    @Transactional(rollbackFor = TransactionException.class)
+    public Integer deleteById(Long id) {
+        return userMapper.deleteById(id);
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = TransactionException.class)
     public Long updateUser(User user) {
         return userMapper.updateUser(user);
     }
@@ -116,20 +122,29 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public String login(String userName, String password) {
-
-        //根据用户输入的账号及密码生成AuthenticationToken
+        checkArgument(!StringUtils.isEmpty(userName), "用户名不能为空");
+        checkArgument(!StringUtils.isEmpty(password), "密码不能为空");
+        /**
+         * 根据用户输入的账号及密码生成AuthenticationToken
+         */
         UsernamePasswordAuthenticationToken upToken = new UsernamePasswordAuthenticationToken(userName, password);
 
         try {
-            // 用户名密码登陆效验
+            /**
+             * 用户名密码登陆效验
+             */
             final Authentication authentication = authenticationManager.authenticate(upToken);
-            // 认证成功，将认证信息存入holder中
+            /**
+             * 认证成功，将认证信息存入holder中
+             */
             SecurityContext ctx = SecurityContextHolder.createEmptyContext();
             SecurityContextHolder.setContext(ctx);
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
             final UserDetails userDetails = userDetailService.loadUserByUsername(userName);
-            //jwt工具生成的TOKEN
+            /**
+             * jwt工具生成的TOKEN
+             */
             final String token = jwtTokenUtil.generateToken(userDetails);
 
             return token;

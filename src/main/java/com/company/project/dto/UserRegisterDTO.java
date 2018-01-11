@@ -1,5 +1,6 @@
 package com.company.project.dto;
 
+import io.swagger.annotations.ApiModel;
 import lombok.Data;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.Length;
@@ -10,11 +11,10 @@ import java.io.Serializable;
 
 /**
  * Created by jinhuaquan on 2017/8/2.
- *
- *
  */
 @Data
-public class UserRegisterDTO implements Serializable{
+@ApiModel(value = "用户注册请求类", description = "用户注册")
+public class UserRegisterDTO {
 
     @Length(min = 3, max = 16, message = "请控制用户名的长度在3~16个字符之间")
     private String name;

@@ -15,8 +15,6 @@ import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.StringUtils;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.security.RolesAllowed;
@@ -43,14 +41,8 @@ public class UserController {
      * @return
      */
     @ApiOperation(value="注册新User", notes="注册一个User")
-    @ApiImplicitParam(name = "UserRegisterDTO", value = "DTO", required = true, dataType = "UserRegisterDTO")
     @RequestMapping(value = "/users/actions/register", method = RequestMethod.POST)
-    public Result saveUser(@RequestBody @Valid UserRegisterDTO userRegisterDto, BindingResult bindingResult){
-
-        if (bindingResult.hasErrors()){
-            return ResultGenerator.genFailResult(bindingResult.getFieldError().getDefaultMessage());
-        }
-
+    public Result saveUser(@RequestBody @Valid UserRegisterDTO userRegisterDto){
         Long userId = userService.saveUser(userRegisterDto);
 
         return ResultGenerator.genSuccessResult(userId);
@@ -64,19 +56,12 @@ public class UserController {
      */
     @ApiOperation(value="用户登录", notes="用户进行登录")
     @ApiImplicitParams({
-                           @ApiImplicitParam(name = "userName", value = "user的phone或email", required = true, dataType = "String"),
-                           @ApiImplicitParam(name = "password", value = "user的密码", required = true, dataType = "String")
+                           @ApiImplicitParam(name = "userName", value = "user的phone或email", required = true),
+                           @ApiImplicitParam(name = "password", value = "user的密码", required = true)
     })
     @RequestMapping(value = "/users/actions/login", method = RequestMethod.GET)
     public Result login(@RequestHeader String userName, @RequestHeader String password)
     {
-        if (!StringUtils.hasText(userName)){
-            return ResultGenerator.genFailResult("用户名不能为空");
-        }
-        if (!StringUtils.hasText(password)){
-            return ResultGenerator.genFailResult("密码不能为空哦");
-        }
-
         try {
             return ResultGenerator.genSuccessResult(userService.login(userName, password));
         } catch (ServiceException e) {
@@ -90,7 +75,7 @@ public class UserController {
      * @return
      */
     @ApiOperation(value="刷新token", notes="刷新token")
-    @ApiImplicitParam(name = "UserRegisterDTO", value = "DTO", required = true, dataType = "UserRegisterDTO")
+    @ApiImplicitParam(paramType = "header", name = "oldToken", value = "old token", required = true)
     @RequestMapping(value = "/users/actions/refresh", method = RequestMethod.GET)
     public Result refresh(@RequestHeader("Authorization") String oldToken){
 
@@ -108,8 +93,7 @@ public class UserController {
     @ApiImplicitParam(name = "id", value = "user的id", required = true, dataType = "Long")
     @RequestMapping(value = "/users/{id}", method = RequestMethod.DELETE)
     public Result deleteUser(@PathVariable Long id) {
-        userService.deleteById(id);
-        return ResultGenerator.genSuccessResult();
+        return ResultGenerator.genSuccessResult(userService.deleteById(id));
     }
 
 
@@ -120,24 +104,27 @@ public class UserController {
         })
     @RequestMapping(value = "/users/{id}", method = RequestMethod.PUT)
     public Result updateUser(@PathVariable Long id, @RequestBody User user) {
-        userService.updateUser(user);
-        return ResultGenerator.genSuccessResult();
+        return ResultGenerator.genSuccessResult(userService.updateUser(user));
     }
 
 
     @ApiOperation(value="根据id查询User", notes="根据url中的id来获取User")
-    @ApiImplicitParam(name = "id", value = "User的id", required = true, dataType = "Long")
+    @ApiImplicitParam(name = "id", value = "User的id", required = true, dataType = "int")
     @RequestMapping(value = "/users/{id}", method = RequestMethod.GET)
     public Result getUser(@PathVariable Long id) {
-        User user = userService.findById(id);
-        return ResultGenerator.genSuccessResult(user);
+        return ResultGenerator.genSuccessResult(userService.findById(id));
     }
 
 
     @ApiOperation(value="获取User列表", notes="分页查询User列表")
     @RequestMapping(value = "/users", method = RequestMethod.GET)
+    @ApiImplicitParams(value = {
+                                    @ApiImplicitParam(paramType = "query", name = "pageNo", value = "页码"),
+                                   @ApiImplicitParam(paramType = "query", name = "pageSize", value = "每页大小")
+    })
     @RolesAllowed({"ROLE_AUTHOR"})
-    public Result listUser(@RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "0") Integer size) {
+    public Result listUser(@RequestParam(defaultValue = "0", required = false) Integer page,
+                           @RequestParam(defaultValue = "0", required = false) Integer size) {
         PageHelper.startPage(page, size);
         List<User> list = userService.findAll();
         PageInfo pageInfo = new PageInfo(list);
