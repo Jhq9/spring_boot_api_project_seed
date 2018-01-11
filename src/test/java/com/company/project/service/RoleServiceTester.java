@@ -1,13 +1,13 @@
 package com.company.project.service;
 
 import com.company.project.Tester;
+import com.company.project.dto.RoleRequestDTO;
 import com.company.project.model.Role;
+import com.github.pagehelper.PageInfo;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
-
-import java.util.List;
 
 /**
  * @author jinhuaquan
@@ -26,7 +26,7 @@ public class RoleServiceTester extends Tester {
     @Before
     public void testSaveRole() {
 
-        Role role = new Role();
+        RoleRequestDTO role = new RoleRequestDTO();
         role.setName("ROLE_TESTER");
 
         Long num = roleService.saveRole(role);
@@ -49,8 +49,8 @@ public class RoleServiceTester extends Tester {
      */
     @Test
     public void testFindAll() {
-        List<Role> role = roleService.findAll();
-        Assert.isTrue(role.size() > 0, "角色查询不正确");
+        PageInfo<Role> role = roleService.findAll(1, 10);
+        Assert.isTrue(role.getList().size() > 0, "角色查询不正确");
     }
 
     /**
@@ -58,8 +58,8 @@ public class RoleServiceTester extends Tester {
      */
     @Test
     public void testDeleteRole() {
-        Long num = roleService.deleteById(3L);
-        System.out.println(num);
+        Integer num = roleService.deleteById(3L);
+
         Assert.isTrue(num == 1L , "角色删除失败");
     }
 
@@ -70,8 +70,9 @@ public class RoleServiceTester extends Tester {
     public void testUpdateRole() {
         Role role = roleService.findById(2L);
         role.setName("Role_UPDATER");
-
-        Long num = roleService.updateRole(role);
+        RoleRequestDTO roleRequestDTO = new RoleRequestDTO();
+        roleRequestDTO.setName("1123");
+        Long num = roleService.updateRole(role.getId(), roleRequestDTO);
 
         Assert.isTrue(num == 1L, "角色信息更新失败");
     }

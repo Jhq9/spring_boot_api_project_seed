@@ -1,13 +1,14 @@
 package com.company.project.service.impl;
 
 import com.company.project.dao.RoleMapper;
+import com.company.project.dto.RoleRequestDTO;
 import com.company.project.model.Role;
 import com.company.project.service.RoleService;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 
 /**
@@ -23,18 +24,27 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     @Transactional
-    public Long saveRole(Role role) {
-        return roleMapper.saveRole(role);
+    public Long saveRole(RoleRequestDTO roleRequestDTO) {
+        Role role = new Role();
+
+        role.setName(roleRequestDTO.getName());
+        roleMapper.saveRole(role);
+
+        return role.getId();
     }
 
     @Override
-    public Long deleteById(Long id) {
+    public Integer deleteById(Long id) {
        return roleMapper.deleteById(id);
     }
 
     @Override
     @Transactional
-    public Long updateRole(Role role) {
+    public Long updateRole(Long id, RoleRequestDTO requestDTO) {
+        Role role = new Role();
+        role.setId(id);
+        role.setName(requestDTO.getName());
+
         return roleMapper.updateRole(role);
     }
 
@@ -44,7 +54,11 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public List<Role> findAll() {
-        return roleMapper.findAll();
+    public PageInfo<Role> findAll(Integer pageNo, Integer pageSize) {
+        PageHelper.startPage(pageNo, pageSize);
+
+        PageInfo<Role> pageInfo = new PageInfo<>(roleMapper.findAll());
+
+        return pageInfo;
     }
 }

@@ -1,8 +1,8 @@
 package com.company.project.service;
 
+import com.company.project.dto.RoleRequestDTO;
 import com.company.project.model.Role;
-
-import java.util.List;
+import com.github.pagehelper.PageInfo;
 
 /**
  * @author CodeGenerator
@@ -13,24 +13,25 @@ public interface RoleService {
 
     /**
      * 新增一个角色Role
-     * @param role
+     * @param requestDTO
      * @return
      */
-    Long saveRole(Role role);
+    Long saveRole(RoleRequestDTO requestDTO);
 
     /**
      * 根据id删除一个角色
      * @param id
      * @return
      */
-    Long deleteById(Long id);
+    Integer deleteById(Long id);
 
     /**
      *  更新角色信息
-     *  @param role
+     *  @param id
+     *  @param requestDTO
      *  @return
      */
-    Long updateRole(Role role);
+    Long updateRole(Long id, RoleRequestDTO requestDTO);
 
     /**
      *  根据id找到角色
@@ -41,7 +42,9 @@ public interface RoleService {
 
     /**
      * 找出所有的角色
+     * @param pageNo
+     * @param pageSize
      * @return
      */
-    List<Role> findAll();
+    PageInfo<Role> findAll(Integer pageNo, Integer pageSize);
 }

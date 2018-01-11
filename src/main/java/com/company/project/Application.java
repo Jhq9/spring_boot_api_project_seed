@@ -7,6 +7,9 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
+/**
+ * @author jinhuaquan
+ */
 @SpringBootApplication
 @EnableWebMvc
 @EnableWebSecurity

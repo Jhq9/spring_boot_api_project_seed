@@ -5,10 +5,8 @@ import com.company.project.core.ResultCode;
 import com.company.project.core.ResultGenerator;
 import com.company.project.core.ServiceException;
 import com.company.project.dto.UserRegisterDTO;
-import com.company.project.model.User;
+import com.company.project.dto.UserRequestDTO;
 import com.company.project.service.UserService;
-import com.github.pagehelper.PageHelper;
-import com.github.pagehelper.PageInfo;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
@@ -19,7 +17,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.security.RolesAllowed;
 import javax.validation.Valid;
-import java.util.List;
 
 /**
 * Created by CodeGenerator on 2017/10/15.
@@ -87,8 +84,6 @@ public class UserController {
 
     }
 
-
-
     @ApiOperation(value="根据id删除user", notes="根据url中的id来指定删除user对象")
     @ApiImplicitParam(name = "id", value = "user的id", required = true, dataType = "Long")
     @RequestMapping(value = "/users/{id}", method = RequestMethod.DELETE)
@@ -98,13 +93,10 @@ public class UserController {
 
 
     @ApiOperation(value="更新user信息", notes="根据url中的id来指定更新对象，并根据传过来的user信息来更新user详细信息")
-    @ApiImplicitParams({
-    @ApiImplicitParam(name = "id", value = "user的id", required = true, dataType = "Long"),
-    @ApiImplicitParam(name = "user", value = "实体user", required = true, dataType = "user")
-        })
+    @ApiImplicitParam(paramType = "path", name = "id", value = "user的id", required = true)
     @RequestMapping(value = "/users/{id}", method = RequestMethod.PUT)
-    public Result updateUser(@PathVariable Long id, @RequestBody User user) {
-        return ResultGenerator.genSuccessResult(userService.updateUser(user));
+    public Result updateUser(@PathVariable Long id, @RequestBody UserRequestDTO requestDTO) {
+        return ResultGenerator.genSuccessResult(userService.updateUser(id, requestDTO));
     }
 
 
@@ -123,12 +115,9 @@ public class UserController {
                                    @ApiImplicitParam(paramType = "query", name = "pageSize", value = "每页大小")
     })
     @RolesAllowed({"ROLE_AUTHOR"})
-    public Result listUser(@RequestParam(defaultValue = "0", required = false) Integer page,
-                           @RequestParam(defaultValue = "0", required = false) Integer size) {
-        PageHelper.startPage(page, size);
-        List<User> list = userService.findAll();
-        PageInfo pageInfo = new PageInfo(list);
-        return ResultGenerator.genSuccessResult(pageInfo);
+    public Result listUser(@RequestParam(defaultValue = "0", required = false) Integer pageNo,
+                           @RequestParam(defaultValue = "0", required = false) Integer pagesize) {
+        return ResultGenerator.genSuccessResult(userService.findAll(pageNo, pagesize));
     }
 
 }

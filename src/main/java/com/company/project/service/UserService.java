@@ -1,9 +1,9 @@
 package com.company.project.service;
 
 import com.company.project.dto.UserRegisterDTO;
+import com.company.project.dto.UserRequestDTO;
 import com.company.project.model.User;
-
-import java.util.List;
+import com.github.pagehelper.PageInfo;
 
 /**
  *
@@ -30,10 +30,11 @@ public interface UserService {
 
     /**
      * 更新用户信息
-     * @param user
+     * @param id
+     * @param requestDTO
      * @return
      */
-    Long updateUser(User user);
+    Long updateUser(Long id, UserRequestDTO requestDTO);
 
     /**
      * 根据id查询特定用户
@@ -44,9 +45,11 @@ public interface UserService {
 
     /**
      * 查询所有的用户
+     * @param pageNo
+     * @param pageSize
      * @return
      */
-    List<User> findAll();
+    PageInfo<User> findAll(Integer pageNo, Integer pageSize);
 
     /**
      * 根据手机号查询出用户

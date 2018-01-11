@@ -18,6 +18,7 @@ public interface UserMapper {
     /**
      * Delete the user by id
      * @param id
+     * @return
      */
     Integer deleteById(Long id);
 
