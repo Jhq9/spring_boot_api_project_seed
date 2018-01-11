@@ -32,10 +32,4 @@ spring:
       #druid datasouce database settings end
 logging:
   level: info
-security:
-  basic:
-    enabled: false
-management:
-  security:
-    enabled: false
 

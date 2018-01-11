@@ -90,7 +90,7 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter{
             http.cors().and()
                 .exceptionHandling()
                 .authenticationEntryPoint(unauthorizedHandler).and()
-                .authorizeRequests().antMatchers("/", "/static/", "/api/users/actions/register")
+                .authorizeRequests().antMatchers("/", "/static/", "/api/users/actions/register,/api/users/actions/login")
                 .permitAll()
                 .antMatchers("/auth/**")
                 // 对于获取token的rest api要允许匿名访问

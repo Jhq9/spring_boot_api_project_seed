@@ -1,7 +1,6 @@
 package com.company.project.service;
 
 import com.company.project.model.Role;
-import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
 
@@ -10,7 +9,6 @@ import java.util.List;
  *
  * Role的service层接口
  */
-@Mapper
 public interface RoleService {
 
     /**
