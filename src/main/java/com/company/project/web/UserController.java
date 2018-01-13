@@ -4,8 +4,8 @@ import com.company.project.core.Result;
 import com.company.project.core.ResultCode;
 import com.company.project.core.ResultGenerator;
 import com.company.project.core.ServiceException;
-import com.company.project.dto.UserRegisterDTO;
-import com.company.project.dto.UserRequestDTO;
+import com.company.project.vo.UserRegisterVO;
+import com.company.project.vo.UserRequestVO;
 import com.company.project.service.UserService;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -34,13 +34,13 @@ public class UserController {
 
     /**
      * 用户的注册
-     * @param userRegisterDto
+     * @param userRegisterVO
      * @return
      */
     @ApiOperation(value="注册新User", notes="注册一个User")
     @RequestMapping(value = "/users/actions/register", method = RequestMethod.POST)
-    public Result saveUser(@RequestBody @Valid UserRegisterDTO userRegisterDto){
-        Long userId = userService.saveUser(userRegisterDto);
+    public Result saveUser(@RequestBody @Valid UserRegisterVO userRegisterVO){
+        Long userId = userService.saveUser(userRegisterVO);
 
         return ResultGenerator.genSuccessResult(userId);
     }
@@ -95,7 +95,7 @@ public class UserController {
     @ApiOperation(value="更新user信息", notes="根据url中的id来指定更新对象，并根据传过来的user信息来更新user详细信息")
     @ApiImplicitParam(paramType = "path", name = "id", value = "user的id", required = true)
     @RequestMapping(value = "/users/{id}", method = RequestMethod.PUT)
-    public Result updateUser(@PathVariable Long id, @RequestBody UserRequestDTO requestDTO) {
+    public Result updateUser(@PathVariable Long id, @RequestBody UserRequestVO requestDTO) {
         return ResultGenerator.genSuccessResult(userService.updateUser(id, requestDTO));
     }
 

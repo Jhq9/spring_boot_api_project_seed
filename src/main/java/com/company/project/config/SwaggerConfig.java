@@ -1,4 +1,4 @@
-package com.company.project.configurer;
+package com.company.project.config;
 
 import com.company.project.core.ProjectConstant;
 import org.springframework.context.annotation.Bean;
@@ -16,7 +16,7 @@ import springfox.documentation.spring.web.plugins.Docket;
  * @desc swagger的配置
  **/
 @Configuration
-public class SwaggerConfigurer {
+public class SwaggerConfig {
 
     @Bean
     public Docket creatRestApi() {

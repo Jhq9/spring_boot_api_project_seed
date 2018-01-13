@@ -2,7 +2,7 @@ package com.company.project.web;
 
 import com.company.project.core.Result;
 import com.company.project.core.ResultGenerator;
-import com.company.project.dto.RoleRequestDTO;
+import com.company.project.vo.RoleRequestVO;
 import com.company.project.service.RoleService;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
@@ -27,7 +27,7 @@ public class RoleController {
 
     @ApiOperation(value="保存Role", notes="新增一个Role")
     @RequestMapping(value = "/roles", method = RequestMethod.POST)
-    public Result saveRole (@Valid @RequestBody RoleRequestDTO requestDTO) {
+    public Result saveRole (@Valid @RequestBody RoleRequestVO requestDTO) {
         return ResultGenerator.genSuccessResult(roleService.saveRole(requestDTO));
     }
 
@@ -41,8 +41,8 @@ public class RoleController {
     @ApiOperation(value="更新role信息", notes="根据url中的id来指定更新对象，并根据传过来的role信息来更新role详细信息")
     @ApiImplicitParam(paramType = "path", name = "id", value = "role的id", required = true, dataType = "Long")
     @RequestMapping(value = "/roles/{id}", method = RequestMethod.PUT)
-    public Result updateRole(@PathVariable Long id, @Valid @RequestBody RoleRequestDTO roleRequestDTO) {
-        return ResultGenerator.genSuccessResult(roleService.updateRole(id, roleRequestDTO));
+    public Result updateRole(@PathVariable Long id, @Valid @RequestBody RoleRequestVO roleRequestVO) {
+        return ResultGenerator.genSuccessResult(roleService.updateRole(id, roleRequestVO));
     }
 
     @ApiOperation(value="根据id查询Role", notes="根据url中的id来获取Role")

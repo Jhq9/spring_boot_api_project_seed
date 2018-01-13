@@ -1,7 +1,7 @@
 package com.company.project.service;
 
-import com.company.project.dto.UserRegisterDTO;
-import com.company.project.dto.UserRequestDTO;
+import com.company.project.vo.UserRegisterVO;
+import com.company.project.vo.UserRequestVO;
 import com.company.project.model.User;
 import com.github.pagehelper.PageInfo;
 
@@ -16,10 +16,10 @@ public interface UserService {
 
     /**
      * 注册一个新用户
-     * @param userRegisterDTO
+     * @param userRegisterVO
      * @return
      */
-    Long saveUser(UserRegisterDTO userRegisterDTO);
+    Long saveUser(UserRegisterVO userRegisterVO);
 
     /**
      * 根据id删除用户
@@ -34,7 +34,7 @@ public interface UserService {
      * @param requestDTO
      * @return
      */
-    Long updateUser(Long id, UserRequestDTO requestDTO);
+    Long updateUser(Long id, UserRequestVO requestDTO);
 
     /**
      * 根据id查询特定用户

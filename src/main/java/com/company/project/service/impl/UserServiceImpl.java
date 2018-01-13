@@ -3,23 +3,21 @@ package com.company.project.service.impl;
 import com.company.project.core.ServiceException;
 import com.company.project.dao.RoleMapper;
 import com.company.project.dao.UserMapper;
-import com.company.project.dto.UserRegisterDTO;
-import com.company.project.dto.UserRequestDTO;
+import com.company.project.vo.UserRegisterVO;
+import com.company.project.vo.UserRequestVO;
 import com.company.project.model.Role;
 import com.company.project.model.User;
 import com.company.project.security.GeneratorUserDetailService;
 import com.company.project.security.JwtTokenUtil;
 import com.company.project.security.SecurityUser;
 import com.company.project.service.UserService;
+import com.company.project.utils.CglibBeanCopierUtils;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.google.common.base.Preconditions;
-import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.transaction.TransactionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -35,7 +33,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.util.Date;
-import java.util.List;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
@@ -73,13 +70,14 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(rollbackFor = TransactionException.class)
-    public Long saveUser(UserRegisterDTO registerDTO) {
+    public Long saveUser(UserRegisterVO registerDTO) {
         Date now = Date.from(Instant.now());
         Role role = roleMapper.findByName(registerDTO.getRoleName());
 
         User user = new User();
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        BeanUtils.copyProperties(registerDTO, user);
+
+        CglibBeanCopierUtils.copyProperties(registerDTO, user);
         user.setPassword(encoder.encode(registerDTO.getPassword()));
         user.setRole(role);
 
@@ -99,10 +97,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(rollbackFor = TransactionException.class)
-    public Long updateUser(Long id, UserRequestDTO requestDTO) {
+    public Long updateUser(Long id, UserRequestVO requestDTO) {
         User user = new User();
         user.setId(id);
-        BeanUtils.copyProperties(requestDTO, user);
+        CglibBeanCopierUtils.copyProperties(requestDTO, user);
+
         if (!StringUtils.isEmpty(requestDTO.getRoleName())) {
             user.setRole(roleMapper.findByName(requestDTO.getRoleName()));
         }

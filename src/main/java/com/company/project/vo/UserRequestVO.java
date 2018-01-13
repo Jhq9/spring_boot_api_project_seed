@@ -1,4 +1,4 @@
-package com.company.project.dto;
+package com.company.project.vo;
 
 import io.swagger.annotations.ApiModel;
 import lombok.Data;
@@ -10,7 +10,7 @@ import lombok.Data;
  **/
 @Data
 @ApiModel(value = "The request DTO of user", description = "DTO")
-public class UserRequestDTO {
+public class UserRequestVO {
 
     /**
      * name 用户名

@@ -1,4 +1,4 @@
-package com.company.project.configurer;
+package com.company.project.config;
 
 
 import com.alibaba.fastjson.JSON;
@@ -37,9 +37,9 @@ import java.util.List;
  *
  */
 @Configuration
-public class WebMvcConfigurer extends WebMvcConfigurerAdapter {
+public class WebMvcConfig extends WebMvcConfigurerAdapter {
 
-    private final Logger logger = LoggerFactory.getLogger(WebMvcConfigurer.class);
+    private final Logger logger = LoggerFactory.getLogger(WebMvcConfig.class);
 
 
     /**

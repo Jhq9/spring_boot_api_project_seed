@@ -1,4 +1,4 @@
-package com.company.project.configurer;
+package com.company.project.config;
 
 import com.company.project.dao.UserMapper;
 import com.company.project.security.GeneratorUserDetailService;
@@ -34,7 +34,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
  */
 @Order(SecurityProperties.ACCESS_OVERRIDE_ORDER)
 @EnableGlobalMethodSecurity(securedEnabled = true, jsr250Enabled = true)
-public class SecurityConfigurer extends WebSecurityConfigurerAdapter{
+public class SecurityConfig extends WebSecurityConfigurerAdapter{
 
     @Autowired
     private JwtAuthenticationEntryPoint unauthorizedHandler;

@@ -1,3 +1,10 @@
+server:
+  undertow:
+    io-threads: 2
+    worker-threads: 20
+    buffer-size: 1024
+    direct-buffers: true
+  port: 8081
 spring:
   profiles:
     active: pro
@@ -22,3 +29,4 @@ jwt:
       path: auth
       refresh: refresh
       register: "/api/users/actions/register"
+

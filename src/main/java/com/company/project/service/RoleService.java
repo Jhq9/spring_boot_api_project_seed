@@ -1,6 +1,6 @@
 package com.company.project.service;
 
-import com.company.project.dto.RoleRequestDTO;
+import com.company.project.vo.RoleRequestVO;
 import com.company.project.model.Role;
 import com.github.pagehelper.PageInfo;
 
@@ -16,7 +16,7 @@ public interface RoleService {
      * @param requestDTO
      * @return
      */
-    Long saveRole(RoleRequestDTO requestDTO);
+    Long saveRole(RoleRequestVO requestDTO);
 
     /**
      * 根据id删除一个角色
@@ -31,7 +31,7 @@ public interface RoleService {
      *  @param requestDTO
      *  @return
      */
-    Long updateRole(Long id, RoleRequestDTO requestDTO);
+    Long updateRole(Long id, RoleRequestVO requestDTO);
 
     /**
      *  根据id找到角色

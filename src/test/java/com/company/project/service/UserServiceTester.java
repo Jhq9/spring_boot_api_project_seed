@@ -1,7 +1,7 @@
 package com.company.project.service;
 
 import com.company.project.Tester;
-import com.company.project.dto.UserRegisterDTO;
+import com.company.project.vo.UserRegisterVO;
 import com.company.project.model.User;
 import org.junit.Before;
 import org.junit.Test;
@@ -23,15 +23,15 @@ public class UserServiceTester extends Tester{
      */
     @Before
     public void init() {
-        UserRegisterDTO userRegisterDTO = new UserRegisterDTO();
+        UserRegisterVO userRegisterVO = new UserRegisterVO();
 
-        userRegisterDTO.setEmail("1044038055@qq.com");
-        userRegisterDTO.setName("jhq");
-        userRegisterDTO.setPassword("qwq1qwqwqw");
-        userRegisterDTO.setPhone("15800084691");
-        userRegisterDTO.setRoleName("ROLE_USER");
+        userRegisterVO.setEmail("1044038055@qq.com");
+        userRegisterVO.setName("jhq");
+        userRegisterVO.setPassword("qwq1qwqwqw");
+        userRegisterVO.setPhone("15800084691");
+        userRegisterVO.setRoleName("ROLE_USER");
 
-        Long id = userService.saveUser(userRegisterDTO);
+        Long id = userService.saveUser(userRegisterVO);
 
         Assert.isTrue(id != null, "新user保存失败");
     }

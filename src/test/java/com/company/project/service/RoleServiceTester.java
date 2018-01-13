@@ -1,7 +1,7 @@
 package com.company.project.service;
 
 import com.company.project.Tester;
-import com.company.project.dto.RoleRequestDTO;
+import com.company.project.vo.RoleRequestVO;
 import com.company.project.model.Role;
 import com.github.pagehelper.PageInfo;
 import org.junit.Before;
@@ -26,7 +26,7 @@ public class RoleServiceTester extends Tester {
     @Before
     public void testSaveRole() {
 
-        RoleRequestDTO role = new RoleRequestDTO();
+        RoleRequestVO role = new RoleRequestVO();
         role.setName("ROLE_TESTER");
 
         Long num = roleService.saveRole(role);
@@ -70,9 +70,9 @@ public class RoleServiceTester extends Tester {
     public void testUpdateRole() {
         Role role = roleService.findById(2L);
         role.setName("Role_UPDATER");
-        RoleRequestDTO roleRequestDTO = new RoleRequestDTO();
-        roleRequestDTO.setName("1123");
-        Long num = roleService.updateRole(role.getId(), roleRequestDTO);
+        RoleRequestVO roleRequestVO = new RoleRequestVO();
+        roleRequestVO.setName("1123");
+        Long num = roleService.updateRole(role.getId(), roleRequestVO);
 
         Assert.isTrue(num == 1L, "角色信息更新失败");
     }

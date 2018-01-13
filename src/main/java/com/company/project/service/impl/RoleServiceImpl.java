@@ -1,7 +1,7 @@
 package com.company.project.service.impl;
 
 import com.company.project.dao.RoleMapper;
-import com.company.project.dto.RoleRequestDTO;
+import com.company.project.vo.RoleRequestVO;
 import com.company.project.model.Role;
 import com.company.project.service.RoleService;
 import com.github.pagehelper.PageHelper;
@@ -24,10 +24,10 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     @Transactional
-    public Long saveRole(RoleRequestDTO roleRequestDTO) {
+    public Long saveRole(RoleRequestVO roleRequestVO) {
         Role role = new Role();
 
-        role.setName(roleRequestDTO.getName());
+        role.setName(roleRequestVO.getName());
         roleMapper.saveRole(role);
 
         return role.getId();
@@ -40,7 +40,7 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     @Transactional
-    public Long updateRole(Long id, RoleRequestDTO requestDTO) {
+    public Long updateRole(Long id, RoleRequestVO requestDTO) {
         Role role = new Role();
         role.setId(id);
         role.setName(requestDTO.getName());

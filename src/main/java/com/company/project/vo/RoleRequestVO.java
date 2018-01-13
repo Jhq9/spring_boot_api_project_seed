@@ -1,4 +1,4 @@
-package com.company.project.dto;
+package com.company.project.vo;
 
 import io.swagger.annotations.ApiModel;
 import lombok.Data;
@@ -11,7 +11,7 @@ import org.hibernate.validator.constraints.NotEmpty;
  **/
 @Data
 @ApiModel(value = "The request DTO of role", description = "DTO")
-public class RoleRequestDTO {
+public class RoleRequestVO {
 
     /**
      * role name

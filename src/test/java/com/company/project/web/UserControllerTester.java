@@ -1,6 +1,6 @@
 package com.company.project.web;
 
-import com.company.project.dto.UserRegisterDTO;
+import com.company.project.vo.UserRegisterVO;
 import com.company.project.model.User;
 import com.company.project.ControllerTester;
 import com.company.project.service.RoleService;
@@ -52,19 +52,19 @@ public class UserControllerTester extends ControllerTester{
     @Test
     public void testSaveUser() throws Exception {
 
-        UserRegisterDTO userRegisterDTO = new UserRegisterDTO();
+        UserRegisterVO userRegisterVO = new UserRegisterVO();
 
-        userRegisterDTO.setEmail("1044038055@qq.com");
-        userRegisterDTO.setName("jhq");
-        userRegisterDTO.setPassword("qwq1qwqwqw");
-        userRegisterDTO.setPhone("15800084691");
-        userRegisterDTO.setRoleName("ROLE_AUTHOR");
+        userRegisterVO.setEmail("1044038055@qq.com");
+        userRegisterVO.setName("jhq");
+        userRegisterVO.setPassword("qwq1qwqwqw");
+        userRegisterVO.setPhone("15800084691");
+        userRegisterVO.setRoleName("ROLE_AUTHOR");
 
         ObjectMapper mapper = new ObjectMapper();
 
         mockMvc.perform(post("/api/users/actions/register")
                             .contentType(MediaType.APPLICATION_JSON_UTF8)
-                            .content(mapper.writeValueAsString(userRegisterDTO)))
+                            .content(mapper.writeValueAsString(userRegisterVO)))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
             .andExpect(jsonPath("$.code", is(200)))
