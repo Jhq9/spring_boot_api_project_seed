@@ -3,7 +3,7 @@ spring:
     druid:
       url: jdbc:mysql://localhost:3306/jwt
       username: root
-      password: Jovaunn1
+      password: 
       # 下面为连接池的补充设置，应用到上面所有数据源中
       # 初始化大小，最小，最大
       initial-size: 5
